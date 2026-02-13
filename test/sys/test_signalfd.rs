@@ -36,7 +36,7 @@ fn read_empty_signalfd() {
 
 #[test]
 fn test_signalfd() {
-    use nix::sys::signal::{self, raise, SigSet, Signal};
+    use nix::sys::signal::{self, SigSet, Signal, raise};
     use nix::sys::signalfd::SignalFd;
 
     // Grab the mutex for altering signals so we don't interfere with other tests.
@@ -63,7 +63,7 @@ fn test_signalfd() {
 /// Update the signal mask of an already existing signalfd.
 #[test]
 fn test_signalfd_setmask() {
-    use nix::sys::signal::{self, raise, SigSet, Signal};
+    use nix::sys::signal::{self, SigSet, Signal, raise};
     use nix::sys::signalfd::SignalFd;
 
     // Grab the mutex for altering signals so we don't interfere with other tests.

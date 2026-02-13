@@ -30,7 +30,7 @@ const fn zero_init_timespec() -> timespec {
     )
 ))]
 pub(crate) mod timer {
-    use crate::sys::time::{zero_init_timespec, TimeSpec};
+    use crate::sys::time::{TimeSpec, zero_init_timespec};
     use bitflags::bitflags;
 
     #[derive(Debug, Clone, Copy)]

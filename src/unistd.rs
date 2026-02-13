@@ -1464,8 +1464,8 @@ pub fn lseek64<Fd: std::os::fd::AsFd>(
 /// Create an interprocess channel.
 ///
 /// See also [pipe(2)](https://pubs.opengroup.org/onlinepubs/9699919799/functions/pipe.html)
-pub fn pipe(
-) -> std::result::Result<(std::os::fd::OwnedFd, std::os::fd::OwnedFd), Error> {
+pub fn pipe()
+-> std::result::Result<(std::os::fd::OwnedFd, std::os::fd::OwnedFd), Error> {
     let mut fds = mem::MaybeUninit::<[std::os::fd::OwnedFd; 2]>::uninit();
 
     let res = unsafe { libc::pipe(fds.as_mut_ptr().cast()) };
@@ -1736,7 +1736,7 @@ pub fn fdatasync<Fd: std::os::fd::AsFd>(fd: Fd) -> Result<()> {
         // apple libc supports fdatasync too, albeit not being present in its headers
         // [fdatasync](https://github.com/apple/darwin-xnu/blob/2ff845c2e033bd0ff64b5b6aa6063a1f8f65aa32/bsd/vfs/vfs_syscalls.c#L7728)
         if #[cfg(apple_targets)] {
-            extern "C" {
+            unsafe extern "C" {
                 fn fdatasync(fd: libc::c_int) -> libc::c_int;
             }
         } else {

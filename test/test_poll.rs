@@ -1,6 +1,6 @@
 use nix::{
     errno::Errno,
-    poll::{poll, PollFd, PollFlags, PollTimeout},
+    poll::{PollFd, PollFlags, PollTimeout, poll},
     unistd::{pipe, write},
 };
 use std::os::unix::io::{AsFd, BorrowedFd};

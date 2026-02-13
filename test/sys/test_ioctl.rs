@@ -205,7 +205,7 @@ mod linux_ioctls {
     use std::mem;
     use std::os::unix::io::AsRawFd;
 
-    use libc::{termios, TCGETS, TCSBRK, TCSETS, TIOCNXCL};
+    use libc::{TCGETS, TCSBRK, TCSETS, TIOCNXCL, termios};
     use tempfile::tempfile;
 
     use nix::errno::Errno;

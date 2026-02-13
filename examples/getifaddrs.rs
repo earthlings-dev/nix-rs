@@ -21,10 +21,10 @@ fn main() {
                 addr.flags
             );
         }
-        if let Some(dl) = addr.address.as_ref().unwrap().as_link_addr() {
-            if dl.addr().is_none() {
-                continue;
-            }
+        if let Some(dl) = addr.address.as_ref().unwrap().as_link_addr()
+            && dl.addr().is_none()
+        {
+            continue;
         }
         let family = addr
             .address

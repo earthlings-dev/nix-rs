@@ -1,5 +1,5 @@
 use nix::errno::Errno;
-use nix::mount::{mount, MntFlags};
+use nix::mount::{MntFlags, mount};
 
 #[test]
 fn test_mount() {

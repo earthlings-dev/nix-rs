@@ -1,5 +1,5 @@
-use nix::sys::resource::{getrlimit, setrlimit, Resource};
-use nix::sys::resource::{getrusage, UsageWho};
+use nix::sys::resource::{Resource, getrlimit, setrlimit};
+use nix::sys::resource::{UsageWho, getrusage};
 
 /// Tests the RLIMIT_NOFILE functionality of getrlimit(), where the resource RLIMIT_NOFILE refers
 /// to the maximum file descriptor number that can be opened by the process (aka the maximum number

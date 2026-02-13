@@ -1,10 +1,10 @@
 use nix::sys::uio::*;
 use nix::unistd::*;
 use rand::distr::Alphanumeric;
-use rand::{rng, Rng};
+use rand::{RngExt, rng};
+use std::cmp;
 use std::fs::OpenOptions;
 use std::io::IoSlice;
-use std::{cmp, iter};
 
 #[cfg(not(target_os = "redox"))]
 use std::io::IoSliceMut;
@@ -43,7 +43,7 @@ fn test_writev() {
     }
     let (reader, writer) = pipe().expect("Couldn't create pipe");
     // FileDesc will close its filedesc (reader).
-    let mut read_buf: Vec<u8> = iter::repeat(0u8).take(128 * 16).collect();
+    let mut read_buf: Vec<u8> = std::iter::repeat_n(0u8, 128 * 16).collect();
 
     // Blocking io, should write all data.
     let write_res = writev(&writer, &iovecs);
@@ -76,7 +76,7 @@ fn test_readv() {
         } else {
             rng().random_range(64..cmp::min(256, left))
         };
-        let v: Vec<u8> = iter::repeat(0u8).take(vec_len).collect();
+        let v: Vec<u8> = std::iter::repeat_n(0u8, vec_len).collect();
         storage.push(v);
         allocated += vec_len;
     }

@@ -1,7 +1,7 @@
 use crate::*;
 use nix::{
     errno::Errno,
-    mount::{unmount, MntFlags, Nmount},
+    mount::{MntFlags, Nmount, unmount},
 };
 use std::{ffi::CString, fs::File, path::Path};
 use tempfile::tempdir;

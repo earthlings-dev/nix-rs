@@ -1,8 +1,6 @@
 #[cfg(target_os = "linux")]
 #[cfg(feature = "process")]
 mod test_prctl {
-    use std::ffi::CStr;
-
     use nix::sys::prctl;
 
     #[cfg_attr(qemu, ignore)]
@@ -70,15 +68,14 @@ mod test_prctl {
     fn test_get_set_name() {
         let original = prctl::get_name().unwrap();
 
-        let long_name =
-            CStr::from_bytes_with_nul(b"0123456789abcdefghijklmn\0").unwrap();
+        let long_name = c"0123456789abcdefghijklmn";
         prctl::set_name(long_name).unwrap();
         let res = prctl::get_name().unwrap();
 
         // name truncated by kernel to TASK_COMM_LEN
         assert_eq!(&long_name.to_str().unwrap()[..15], res.to_str().unwrap());
 
-        let short_name = CStr::from_bytes_with_nul(b"01234567\0").unwrap();
+        let short_name = c"01234567";
         prctl::set_name(short_name).unwrap();
         let res = prctl::get_name().unwrap();
         assert_eq!(short_name.to_str().unwrap(), res.to_str().unwrap());
@@ -153,20 +150,10 @@ mod test_prctl {
             )
             .unwrap()
         };
-        let err = prctl::set_vma_anon_name(
-            ptr,
-            sz,
-            Some(CStr::from_bytes_with_nul(b"[,$\0").unwrap()),
-        )
-        .unwrap_err();
+        let err = prctl::set_vma_anon_name(ptr, sz, Some(c"[,$")).unwrap_err();
         assert_eq!(err, Errno::EINVAL);
         // `CONFIG_ANON_VMA_NAME` kernel config might not be set
-        prctl::set_vma_anon_name(
-            ptr,
-            sz,
-            Some(CStr::from_bytes_with_nul(b"Nix\0").unwrap()),
-        )
-        .unwrap_or_default();
+        prctl::set_vma_anon_name(ptr, sz, Some(c"Nix")).unwrap_or_default();
         prctl::set_vma_anon_name(ptr, sz, None).unwrap_or_default();
     }
 }

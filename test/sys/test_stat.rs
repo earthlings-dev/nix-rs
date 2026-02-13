@@ -1,10 +1,10 @@
 #[cfg(not(any(target_os = "redox", target_os = "haiku")))]
 use std::fs;
 use std::fs::File;
-#[cfg(not(target_os = "redox"))]
-use std::os::unix::fs::symlink;
 #[cfg(not(any(target_os = "redox", target_os = "haiku")))]
 use std::os::unix::fs::PermissionsExt;
+#[cfg(not(target_os = "redox"))]
+use std::os::unix::fs::symlink;
 #[cfg(not(target_os = "redox"))]
 use std::path::Path;
 #[cfg(not(any(target_os = "redox", target_os = "haiku")))]
@@ -18,6 +18,11 @@ use libc::{S_IFLNK, S_IFMT};
 use nix::errno::Errno;
 #[cfg(not(target_os = "redox"))]
 use nix::fcntl;
+#[cfg(not(target_os = "redox"))]
+use nix::sys::stat::FchmodatFlags;
+use nix::sys::stat::Mode;
+#[cfg(not(any(target_os = "redox", target_os = "haiku")))]
+use nix::sys::stat::UtimensatFlags;
 #[cfg(any(
     target_os = "linux",
     apple_targets,
@@ -27,11 +32,6 @@ use nix::fcntl;
 use nix::sys::stat::lutimes;
 #[cfg(not(any(target_os = "redox", target_os = "haiku")))]
 use nix::sys::stat::utimensat;
-#[cfg(not(target_os = "redox"))]
-use nix::sys::stat::FchmodatFlags;
-use nix::sys::stat::Mode;
-#[cfg(not(any(target_os = "redox", target_os = "haiku")))]
-use nix::sys::stat::UtimensatFlags;
 #[cfg(not(target_os = "redox"))]
 use nix::sys::stat::{self};
 use nix::sys::stat::{fchmod, stat};
@@ -372,7 +372,7 @@ fn test_mkdirat_fail() {
     target_os = "solaris"
 )))]
 fn test_mknod() {
-    use stat::{lstat, mknod, SFlag};
+    use stat::{SFlag, lstat, mknod};
 
     let file_name = "test_file";
     let tempdir = tempfile::tempdir().unwrap();
@@ -394,7 +394,7 @@ fn test_mknod() {
 fn test_mknodat() {
     use fcntl::{AtFlags, OFlag};
     use nix::dir::Dir;
-    use stat::{fstatat, mknodat, SFlag};
+    use stat::{SFlag, fstatat, mknodat};
 
     let file_name = "test_file";
     let tempdir = tempfile::tempdir().unwrap();
@@ -486,7 +486,7 @@ fn test_utimensat_unchanged() {
 #[test]
 fn test_chflags() {
     use nix::{
-        sys::stat::{fstat, FileFlag},
+        sys::stat::{FileFlag, fstat},
         unistd::chflags,
     };
     use tempfile::NamedTempFile;

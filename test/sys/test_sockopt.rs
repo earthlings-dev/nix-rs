@@ -1,10 +1,10 @@
 #[cfg(linux_android)]
 use crate::*;
 use nix::sys::socket::{
-    getsockopt, setsockopt, socket, sockopt, AddressFamily, SockFlag,
-    SockProtocol, SockType,
+    AddressFamily, SockFlag, SockProtocol, SockType, getsockopt, setsockopt,
+    socket, sockopt,
 };
-use rand::{rng, Rng};
+use rand::{RngExt, rng};
 use std::os::unix::io::{AsRawFd, FromRawFd, OwnedFd};
 
 // NB: FreeBSD supports LOCAL_PEERCRED for SOCK_SEQPACKET, but OSX does not.
@@ -72,7 +72,7 @@ pub fn test_local_peer_token() {
     use nix::sys::socket::{audit_token_t, socketpair};
 
     #[link(name = "bsm", kind = "dylib")]
-    extern "C" {
+    unsafe extern "C" {
         /// Extract the process ID from an `audit_token_t`, used to identify
         /// Mach tasks and senders of Mach messages as subjects of the audit
         /// system.
@@ -136,7 +136,7 @@ fn test_so_buf() {
 #[cfg(target_os = "freebsd")]
 #[test]
 fn test_so_listen_q_limit() {
-    use nix::sys::socket::{bind, listen, Backlog, SockaddrIn};
+    use nix::sys::socket::{Backlog, SockaddrIn, bind, listen};
     use std::net::SocketAddrV4;
     use std::str::FromStr;
 
@@ -162,7 +162,7 @@ fn test_so_listen_q_limit() {
 #[cfg_attr(target_os = "cygwin", ignore)]
 fn test_so_tcp_maxseg() {
     use nix::sys::socket::{
-        accept, bind, connect, getsockname, listen, Backlog, SockaddrIn,
+        Backlog, SockaddrIn, accept, bind, connect, getsockname, listen,
     };
     use std::net::SocketAddrV4;
     use std::str::FromStr;
@@ -383,7 +383,7 @@ fn test_so_tcp_keepalive() {
 #[cfg(linux_android)]
 #[cfg_attr(qemu, ignore)]
 fn test_get_mtu() {
-    use nix::sys::socket::{bind, connect, SockaddrIn};
+    use nix::sys::socket::{SockaddrIn, bind, connect};
     use std::net::SocketAddrV4;
     use std::str::FromStr;
 
@@ -749,7 +749,7 @@ fn test_tcp_fast_open_connect() {
 #[cfg(linux_android)]
 #[test]
 fn can_get_peercred_on_unix_socket() {
-    use nix::sys::socket::{socketpair, sockopt, SockFlag, SockType};
+    use nix::sys::socket::{SockFlag, SockType, socketpair, sockopt};
 
     let (a, b) = socketpair(
         AddressFamily::Unix,
@@ -777,7 +777,7 @@ fn pid_from_pidfd(pidfd: OwnedFd) -> u32 {
 #[cfg(target_os = "linux")]
 #[test]
 fn can_get_peerpidfd_on_unix_socket() {
-    use nix::sys::socket::{socketpair, sockopt, SockFlag, SockType};
+    use nix::sys::socket::{SockFlag, SockType, socketpair, sockopt};
 
     let (a, b) = socketpair(
         AddressFamily::Unix,
@@ -806,7 +806,7 @@ fn can_get_peerpidfd_on_unix_socket() {
 
 #[test]
 fn is_socket_type_unix() {
-    use nix::sys::socket::{socketpair, sockopt, SockFlag, SockType};
+    use nix::sys::socket::{SockFlag, SockType, socketpair, sockopt};
 
     let (a, _b) = socketpair(
         AddressFamily::Unix,
@@ -822,7 +822,7 @@ fn is_socket_type_unix() {
 #[test]
 fn is_socket_type_dgram() {
     use nix::sys::socket::{
-        getsockopt, sockopt, AddressFamily, SockFlag, SockType,
+        AddressFamily, SockFlag, SockType, getsockopt, sockopt,
     };
 
     let s = socket(
@@ -840,8 +840,8 @@ fn is_socket_type_dgram() {
 #[test]
 fn can_get_listen_on_tcp_socket() {
     use nix::sys::socket::{
-        getsockopt, listen, socket, sockopt, AddressFamily, Backlog, SockFlag,
-        SockType,
+        AddressFamily, Backlog, SockFlag, SockType, getsockopt, listen, socket,
+        sockopt,
     };
 
     let s = socket(
@@ -875,7 +875,7 @@ fn can_get_listen_on_tcp_socket() {
 #[test]
 fn test_ktls() {
     use nix::sys::socket::{
-        accept, bind, connect, getsockname, listen, Backlog, SockaddrIn,
+        Backlog, SockaddrIn, accept, bind, connect, getsockname, listen,
     };
     use std::net::SocketAddrV4;
     use std::str::FromStr;
@@ -955,8 +955,8 @@ fn test_ktls() {
 fn test_utun_ifname() {
     skip_if_not_root!("test_utun_ifname");
 
-    use nix::sys::socket::connect;
     use nix::sys::socket::SysControlAddr;
+    use nix::sys::socket::connect;
 
     let fd = socket(
         AddressFamily::System,
@@ -1141,8 +1141,8 @@ fn test_linger_sec() {
 /// Users should be able to define their own sockopts.
 mod sockopt_impl {
     use nix::sys::socket::{
-        getsockopt, setsockopt, socket, AddressFamily, SockFlag, SockProtocol,
-        SockType,
+        AddressFamily, SockFlag, SockProtocol, SockType, getsockopt,
+        setsockopt, socket,
     };
 
     sockopt_impl!(KeepAlive, Both, libc::SOL_SOCKET, libc::SO_KEEPALIVE, bool);
@@ -1193,7 +1193,7 @@ mod sockopt_impl {
 fn test_exclbind() {
     use nix::errno::Errno;
     use nix::sys::socket::{
-        bind, socket, AddressFamily, SockFlag, SockType, SockaddrIn,
+        AddressFamily, SockFlag, SockType, SockaddrIn, bind, socket,
     };
     use std::net::SocketAddrV4;
     use std::str::FromStr;

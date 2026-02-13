@@ -1,8 +1,8 @@
 use libc::{_exit, mode_t, off_t};
 use nix::errno::Errno;
+use nix::fcntl::OFlag;
 #[cfg(not(any(target_os = "redox", target_os = "haiku")))]
 use nix::fcntl::readlink;
-use nix::fcntl::OFlag;
 #[cfg(not(target_os = "redox"))]
 use nix::fcntl::{self, open};
 #[cfg(not(any(
@@ -13,7 +13,7 @@ use nix::fcntl::{self, open};
 use nix::pty::{grantpt, posix_openpt, ptsname, unlockpt};
 #[cfg(not(target_os = "redox"))]
 use nix::sys::signal::{
-    sigaction, SaFlags, SigAction, SigHandler, SigSet, Signal,
+    SaFlags, SigAction, SigHandler, SigSet, Signal, sigaction,
 };
 use nix::sys::stat::{self, Mode, SFlag};
 use nix::sys::wait::*;
@@ -564,8 +564,8 @@ fn test_fchown() {
 #[test]
 #[cfg(not(target_os = "redox"))]
 fn test_fchownat() {
-    use nix::fcntl::AtFlags;
     use nix::fcntl::AT_FDCWD;
+    use nix::fcntl::AtFlags;
 
     let _dr = crate::DirRestore::new();
     // Testing for anything other than our own UID/GID is hard.
@@ -767,7 +767,7 @@ fn test_pipe() {
 ))]
 #[test]
 fn test_pipe2() {
-    use nix::fcntl::{fcntl, FcntlArg, FdFlag};
+    use nix::fcntl::{FcntlArg, FdFlag, fcntl};
 
     let (fd0, fd1) = pipe2(OFlag::O_CLOEXEC).unwrap();
     let f0 =
@@ -978,8 +978,8 @@ fn test_linkat_pathtypes() {
 #[test]
 #[cfg(not(any(target_os = "redox", target_os = "haiku")))]
 fn test_linkat_olddirfd_none() {
-    use nix::fcntl::AtFlags;
     use nix::fcntl::AT_FDCWD;
+    use nix::fcntl::AtFlags;
 
     let _dr = crate::DirRestore::new();
 
@@ -1018,8 +1018,8 @@ fn test_linkat_olddirfd_none() {
 #[test]
 #[cfg(not(any(target_os = "redox", target_os = "haiku")))]
 fn test_linkat_newdirfd_none() {
-    use nix::fcntl::AtFlags;
     use nix::fcntl::AT_FDCWD;
+    use nix::fcntl::AtFlags;
 
     let _dr = crate::DirRestore::new();
 
@@ -1058,8 +1058,8 @@ fn test_linkat_newdirfd_none() {
 #[test]
 #[cfg(not(any(apple_targets, target_os = "redox", target_os = "haiku")))]
 fn test_linkat_no_follow_symlink() {
-    use nix::fcntl::AtFlags;
     use nix::fcntl::AT_FDCWD;
+    use nix::fcntl::AtFlags;
 
     let _m = crate::CWD_LOCK.read();
 
@@ -1104,8 +1104,8 @@ fn test_linkat_no_follow_symlink() {
 #[test]
 #[cfg(not(any(target_os = "redox", target_os = "haiku")))]
 fn test_linkat_follow_symlink() {
-    use nix::fcntl::AtFlags;
     use nix::fcntl::AT_FDCWD;
+    use nix::fcntl::AtFlags;
 
     let _m = crate::CWD_LOCK.read();
 
@@ -1346,8 +1346,8 @@ fn test_getpeereid() {
 #[test]
 #[cfg(not(target_os = "redox"))]
 fn test_faccessat_none_not_existing() {
-    use nix::fcntl::AtFlags;
     use nix::fcntl::AT_FDCWD;
+    use nix::fcntl::AtFlags;
 
     let tempdir = tempfile::tempdir().unwrap();
     let dir = tempdir.path().join("does_not_exist.txt");
@@ -1378,19 +1378,21 @@ fn test_faccessat_not_existing() {
 #[test]
 #[cfg(not(target_os = "redox"))]
 fn test_faccessat_none_file_exists() {
-    use nix::fcntl::AtFlags;
     use nix::fcntl::AT_FDCWD;
+    use nix::fcntl::AtFlags;
 
     let tempdir = tempfile::tempdir().unwrap();
     let path = tempdir.path().join("does_exist.txt");
     let _file = File::create(path.clone()).unwrap();
-    assert!(faccessat(
-        AT_FDCWD,
-        &path,
-        AccessFlags::R_OK | AccessFlags::W_OK,
-        AtFlags::empty(),
-    )
-    .is_ok());
+    assert!(
+        faccessat(
+            AT_FDCWD,
+            &path,
+            AccessFlags::R_OK | AccessFlags::W_OK,
+            AtFlags::empty(),
+        )
+        .is_ok()
+    );
 }
 
 #[test]
@@ -1403,13 +1405,15 @@ fn test_faccessat_file_exists() {
     let exist_file = "does_exist.txt";
     let path = tempdir.path().join(exist_file);
     let _file = File::create(path.clone()).unwrap();
-    assert!(faccessat(
-        &dirfd,
-        &path,
-        AccessFlags::R_OK | AccessFlags::W_OK,
-        AtFlags::empty(),
-    )
-    .is_ok());
+    assert!(
+        faccessat(
+            &dirfd,
+            &path,
+            AccessFlags::R_OK | AccessFlags::W_OK,
+            AtFlags::empty(),
+        )
+        .is_ok()
+    );
 }
 
 #[test]

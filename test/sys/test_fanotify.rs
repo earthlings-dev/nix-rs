@@ -5,7 +5,7 @@ use nix::sys::fanotify::{
     EventFFlags, Fanotify, FanotifyResponse, InitFlags, MarkFlags, MaskFlags,
     Response,
 };
-use std::fs::{read_link, read_to_string, File, OpenOptions};
+use std::fs::{File, OpenOptions, read_link, read_to_string};
 use std::io::ErrorKind;
 use std::io::{Read, Write};
 use std::os::fd::AsRawFd;

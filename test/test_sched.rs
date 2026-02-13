@@ -1,4 +1,4 @@
-use nix::sched::{sched_getaffinity, sched_getcpu, sched_setaffinity, CpuSet};
+use nix::sched::{CpuSet, sched_getaffinity, sched_getcpu, sched_setaffinity};
 use nix::unistd::Pid;
 
 #[test]

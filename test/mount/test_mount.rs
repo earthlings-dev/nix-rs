@@ -6,7 +6,7 @@ use std::process::Command;
 
 use libc::{EACCES, EROFS};
 
-use nix::mount::{mount, umount, MsFlags};
+use nix::mount::{MsFlags, mount, umount};
 use nix::sys::stat::{self, Mode};
 
 use crate::*;

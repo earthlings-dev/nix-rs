@@ -1,6 +1,6 @@
 #![allow(clippy::redundant_slicing)]
 
-use nix::sys::mman::{mmap_anonymous, MapFlags, ProtFlags};
+use nix::sys::mman::{MapFlags, ProtFlags, mmap_anonymous};
 use std::num::NonZeroUsize;
 
 #[test]
@@ -24,7 +24,7 @@ fn test_mmap_anonymous() {
 #[cfg(any(target_os = "linux", target_os = "netbsd"))]
 fn test_mremap_grow() {
     use nix::libc::size_t;
-    use nix::sys::mman::{mremap, MRemapFlags};
+    use nix::sys::mman::{MRemapFlags, mremap};
     use std::ptr::NonNull;
 
     const ONE_K: size_t = 1024;
@@ -81,7 +81,7 @@ fn test_mremap_grow() {
 #[cfg_attr(all(target_pointer_width = "32", qemu), ignore)]
 fn test_mremap_shrink() {
     use nix::libc::size_t;
-    use nix::sys::mman::{mremap, MRemapFlags};
+    use nix::sys::mman::{MRemapFlags, mremap};
     use std::num::NonZeroUsize;
     use std::ptr::NonNull;
 
@@ -124,7 +124,7 @@ fn test_mremap_shrink() {
 #[cfg(target_os = "linux")]
 fn test_mremap_dontunmap() {
     use nix::libc::size_t;
-    use nix::sys::mman::{mremap, MRemapFlags};
+    use nix::sys::mman::{MRemapFlags, mremap};
     use std::num::NonZeroUsize;
     use std::ptr::NonNull;
 
@@ -161,8 +161,8 @@ fn test_mremap_dontunmap() {
 #[cfg(target_os = "linux")]
 fn test_madv_wipeonfork() {
     use nix::libc::size_t;
-    use nix::sys::mman::{madvise, MmapAdvise};
-    use nix::unistd::{fork, ForkResult};
+    use nix::sys::mman::{MmapAdvise, madvise};
+    use nix::unistd::{ForkResult, fork};
     use std::num::NonZeroUsize;
 
     const ONE_K: size_t = 1024;

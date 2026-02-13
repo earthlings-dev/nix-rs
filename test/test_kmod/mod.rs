@@ -2,7 +2,7 @@ use crate::*;
 use std::fs::copy;
 use std::path::PathBuf;
 use std::process::Command;
-use tempfile::{tempdir, TempDir};
+use tempfile::{TempDir, tempdir};
 
 fn compile_kernel_module() -> (PathBuf, String, TempDir) {
     let _m = crate::FORK_MTX.lock();
@@ -33,8 +33,8 @@ fn compile_kernel_module() -> (PathBuf, String, TempDir) {
 }
 
 use nix::errno::Errno;
-use nix::kmod::{delete_module, DeleteModuleFlags};
-use nix::kmod::{finit_module, init_module, ModuleInitFlags};
+use nix::kmod::{DeleteModuleFlags, delete_module};
+use nix::kmod::{ModuleInitFlags, finit_module, init_module};
 use std::ffi::CString;
 use std::fs::File;
 use std::io::Read;

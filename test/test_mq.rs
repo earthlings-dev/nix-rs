@@ -2,13 +2,13 @@ use cfg_if::cfg_if;
 use std::str;
 
 use nix::errno::Errno;
+use nix::mqueue::{MQ_OFlag, MqAttr};
 use nix::mqueue::{
     mq_attr_member_t, mq_close, mq_open, mq_receive, mq_send, mq_timedreceive,
 };
-use nix::mqueue::{MQ_OFlag, MqAttr};
 use nix::sys::stat::Mode;
 use nix::sys::time::{TimeSpec, TimeValLike};
-use nix::time::{clock_gettime, ClockId};
+use nix::time::{ClockId, clock_gettime};
 
 // Defined as a macro such that the error source is reported as the caller's location.
 macro_rules! assert_attr_eq {

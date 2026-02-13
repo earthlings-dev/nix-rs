@@ -544,13 +544,12 @@ impl SockaddrLike for UnixAddr {
     where
         Self: Sized,
     {
-        if let Some(l) = len {
-            if (l as usize) < offset_of!(libc::sockaddr_un, sun_path)
-                || l > u8::MAX as libc::socklen_t
+        if let Some(l) = len
+            && ((l as usize) < offset_of!(libc::sockaddr_un, sun_path)
+                || l > u8::MAX as libc::socklen_t)
             {
                 return None;
             }
-        }
         if unsafe { (*addr).sa_family as i32 != libc::AF_UNIX } {
             return None;
         }
@@ -858,11 +857,10 @@ impl SockaddrLike for SockaddrIn {
     where
         Self: Sized,
     {
-        if let Some(l) = len {
-            if l != mem::size_of::<libc::sockaddr_in>() as libc::socklen_t {
+        if let Some(l) = len
+            && l != mem::size_of::<libc::sockaddr_in>() as libc::socklen_t {
                 return None;
             }
-        }
         if unsafe { (*addr).sa_family as i32 != libc::AF_INET } {
             return None;
         }
@@ -1018,11 +1016,10 @@ impl SockaddrLike for SockaddrIn6 {
     where
         Self: Sized,
     {
-        if let Some(l) = len {
-            if l != mem::size_of::<libc::sockaddr_in6>() as libc::socklen_t {
+        if let Some(l) = len
+            && l != mem::size_of::<libc::sockaddr_in6>() as libc::socklen_t {
                 return None;
             }
-        }
         if unsafe { (*addr).sa_family as i32 != libc::AF_INET6 } {
             return None;
         }
@@ -1581,11 +1578,10 @@ pub mod netlink {
         where
             Self: Sized,
         {
-            if let Some(l) = len {
-                if l != mem::size_of::<libc::sockaddr_nl>() as libc::socklen_t {
+            if let Some(l) = len
+                && l != mem::size_of::<libc::sockaddr_nl>() as libc::socklen_t {
                     return None;
                 }
-            }
             if unsafe { (*addr).sa_family as i32 != libc::AF_NETLINK } {
                 return None;
             }
@@ -1628,12 +1624,11 @@ pub mod alg {
         where
             Self: Sized,
         {
-            if let Some(l) = l {
-                if l != mem::size_of::<libc::sockaddr_alg>() as libc::socklen_t
+            if let Some(l) = l
+                && l != mem::size_of::<libc::sockaddr_alg>() as libc::socklen_t
                 {
                     return None;
                 }
-            }
             if unsafe { (*addr).sa_family as i32 != libc::AF_ALG } {
                 return None;
             }
@@ -1906,11 +1901,10 @@ mod datalink {
                            len: Option<libc::socklen_t>)
             -> Option<Self> where Self: Sized
         {
-            if let Some(l) = len {
-                if l != mem::size_of::<libc::sockaddr_ll>() as libc::socklen_t {
+            if let Some(l) = len
+                && l != mem::size_of::<libc::sockaddr_ll>() as libc::socklen_t {
                     return None;
                 }
-            }
             if unsafe { (*addr).sa_family as i32 != libc::AF_PACKET } {
                 return None;
             }
@@ -2066,11 +2060,10 @@ pub mod vsock {
         where
             Self: Sized,
         {
-            if let Some(l) = len {
-                if l != mem::size_of::<libc::sockaddr_vm>() as libc::socklen_t {
+            if let Some(l) = len
+                && l != mem::size_of::<libc::sockaddr_vm>() as libc::socklen_t {
                     return None;
                 }
-            }
             if unsafe { (*addr).sa_family as i32 != libc::AF_VSOCK } {
                 return None;
             }

@@ -1,10 +1,10 @@
 #[test]
 fn test_memfd_create() {
-    use nix::sys::memfd::memfd_create;
     use nix::sys::memfd::MFdFlags;
+    use nix::sys::memfd::memfd_create;
     use nix::unistd::lseek;
     use nix::unistd::read;
-    use nix::unistd::{write, Whence};
+    use nix::unistd::{Whence, write};
 
     let fd =
         memfd_create("test_memfd_create_name", MFdFlags::MFD_CLOEXEC).unwrap();

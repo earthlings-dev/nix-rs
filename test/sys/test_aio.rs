@@ -13,8 +13,8 @@ use nix::{
     sys::{
         aio::*,
         signal::{
-            sigaction, SaFlags, SigAction, SigHandler, SigSet, SigevNotify,
-            Signal,
+            SaFlags, SigAction, SigHandler, SigSet, SigevNotify, Signal,
+            sigaction,
         },
         time::{TimeSpec, TimeValLike},
     },

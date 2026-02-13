@@ -28,7 +28,7 @@ use std::path::PathBuf;
 use std::ptr;
 
 #[cfg(feature = "fs")]
-use crate::{sys::stat::Mode, NixPath, Result};
+use crate::{NixPath, Result, sys::stat::Mode};
 
 #[cfg(any(
     linux_android,
@@ -39,7 +39,7 @@ use crate::{sys::stat::Mode, NixPath, Result};
     target_os = "freebsd"
 ))]
 #[cfg(feature = "fs")]
-pub use self::posix_fadvise::{posix_fadvise, PosixFadviseAdvice};
+pub use self::posix_fadvise::{PosixFadviseAdvice, posix_fadvise};
 
 /// A file descriptor referring to the working directory of the current process
 /// **that should be ONLY passed to the `dirfd` argument of those `xxat()` functions**.

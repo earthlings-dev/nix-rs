@@ -2,7 +2,7 @@ use super::FORK_MTX;
 use nix::errno::Errno;
 use nix::spawn::{self, PosixSpawnAttr, PosixSpawnFileActions};
 use nix::sys::signal;
-use nix::sys::wait::{waitpid, WaitPidFlag, WaitStatus};
+use nix::sys::wait::{WaitPidFlag, WaitStatus, waitpid};
 use std::ffi::{CStr, CString};
 
 /// Helper function to find a binary in the $PATH

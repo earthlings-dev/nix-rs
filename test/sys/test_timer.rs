@@ -1,6 +1,6 @@
 use nix::sys::signal::{
-    sigaction, SaFlags, SigAction, SigEvent, SigHandler, SigSet, SigevNotify,
-    Signal,
+    SaFlags, SigAction, SigEvent, SigHandler, SigSet, SigevNotify, Signal,
+    sigaction,
 };
 use nix::sys::timer::{Expiration, Timer, TimerSetTimeFlags};
 use nix::time::ClockId;

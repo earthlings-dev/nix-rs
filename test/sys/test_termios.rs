@@ -4,7 +4,7 @@ use tempfile::tempfile;
 use nix::errno::Errno;
 use nix::fcntl;
 use nix::pty::openpty;
-use nix::sys::termios::{self, tcgetattr, BaudRate, LocalFlags, OutputFlags};
+use nix::sys::termios::{self, BaudRate, LocalFlags, OutputFlags, tcgetattr};
 use nix::unistd::{read, write};
 
 /// Helper function analogous to `std::io::Write::write_all`, but for `Fd`s
@@ -54,9 +54,11 @@ fn test_output_flags() {
     };
 
     // Make sure postprocessing '\r' isn't specified by default or this test is useless.
-    assert!(!termios
-        .output_flags
-        .contains(OutputFlags::OPOST | OutputFlags::OCRNL));
+    assert!(
+        !termios
+            .output_flags
+            .contains(OutputFlags::OPOST | OutputFlags::OCRNL)
+    );
 
     // Specify that '\r' characters should be transformed to '\n'
     // OPOST is specified to enable post-processing

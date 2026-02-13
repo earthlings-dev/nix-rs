@@ -1,6 +1,6 @@
 #[cfg(any(freebsdlike, linux_android, target_os = "emscripten"))]
 use nix::time::clock_getcpuclockid;
-use nix::time::{clock_gettime, ClockId};
+use nix::time::{ClockId, clock_gettime};
 
 #[cfg(not(target_os = "redox"))]
 #[test]
@@ -52,7 +52,7 @@ pub fn test_clock_id_pid_cpu_clock_id() {
 pub fn test_clock_nanosleep() {
     use nix::{
         sys::time::{TimeSpec, TimeValLike},
-        time::{clock_nanosleep, ClockNanosleepFlags},
+        time::{ClockNanosleepFlags, clock_nanosleep},
     };
 
     let sleep_time = TimeSpec::microseconds(1);

@@ -1,4 +1,4 @@
-use nix::syslog::{openlog, syslog, Facility, LogFlags, Severity};
+use nix::syslog::{Facility, LogFlags, Severity, openlog, syslog};
 
 #[test]
 fn test_syslog_hello_world() {
@@ -19,9 +19,7 @@ fn test_syslog_hello_world() {
 fn test_openlog_with_ident() {
     use std::ffi::CStr;
 
-    const IDENT: &CStr = unsafe {
-        CStr::from_bytes_with_nul_unchecked(b"test_openlog_with_ident\0")
-    };
+    const IDENT: &CStr = c"test_openlog_with_ident";
 
     let flags = LogFlags::LOG_PID;
     openlog(Some(IDENT), flags, Facility::LOG_USER).unwrap();

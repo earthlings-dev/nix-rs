@@ -1,12 +1,12 @@
 #[cfg(not(target_os = "redox"))]
 use nix::errno::*;
 #[cfg(not(target_os = "redox"))]
-use nix::fcntl::{open, readlink, OFlag};
+use nix::fcntl::{OFlag, open, readlink};
 #[cfg(not(target_os = "redox"))]
 use nix::fcntl::{openat, readlinkat, renameat};
 
 #[cfg(target_os = "linux")]
-use nix::fcntl::{openat2, OpenHow, ResolveFlag};
+use nix::fcntl::{OpenHow, ResolveFlag, openat2};
 
 #[cfg(all(
     target_os = "linux",
@@ -17,7 +17,7 @@ use nix::fcntl::{openat2, OpenHow, ResolveFlag};
         target_arch = "s390x"
     )
 ))]
-use nix::fcntl::{renameat2, RenameFlags};
+use nix::fcntl::{RenameFlags, renameat2};
 #[cfg(not(target_os = "redox"))]
 use nix::sys::stat::Mode;
 #[cfg(not(target_os = "redox"))]
@@ -298,15 +298,15 @@ fn test_copy_file_range() {
 #[cfg(linux_android)]
 mod linux_android {
     use libc::loff_t;
-    use std::io::prelude::*;
     use std::io::IoSlice;
+    use std::io::prelude::*;
 
     use nix::fcntl::*;
     use nix::unistd::{pipe, read, write};
 
-    use tempfile::tempfile;
     #[cfg(target_os = "linux")]
     use tempfile::NamedTempFile;
+    use tempfile::tempfile;
 
     use crate::*;
 

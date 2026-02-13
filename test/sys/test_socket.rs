@@ -1,7 +1,7 @@
 #[cfg(linux_android)]
 use crate::*;
 use libc::c_char;
-use nix::sys::socket::{getsockname, AddressFamily, UnixAddr};
+use nix::sys::socket::{AddressFamily, UnixAddr, getsockname};
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 use std::net::{SocketAddrV4, SocketAddrV6};
@@ -15,9 +15,9 @@ use std::str::FromStr;
 #[test]
 pub fn test_timestamping() {
     use nix::sys::socket::{
-        recvmsg, sendmsg, setsockopt, socket, sockopt::Timestamping,
         ControlMessageOwned, MsgFlags, SockFlag, SockType, SockaddrIn,
-        TimestampingFlag,
+        TimestampingFlag, recvmsg, sendmsg, setsockopt, socket,
+        sockopt::Timestamping,
     };
     use std::io::{IoSlice, IoSliceMut};
 
@@ -76,9 +76,9 @@ pub fn test_timestamping() {
 #[test]
 pub fn test_timestamping_realtime() {
     use nix::sys::socket::{
-        recvmsg, sendmsg, setsockopt, socket, sockopt::ReceiveTimestamp,
-        sockopt::TsClock, ControlMessageOwned, MsgFlags, SockFlag, SockType,
-        SockaddrIn, SocketTimestamp,
+        ControlMessageOwned, MsgFlags, SockFlag, SockType, SockaddrIn,
+        SocketTimestamp, recvmsg, sendmsg, setsockopt, socket,
+        sockopt::ReceiveTimestamp, sockopt::TsClock,
     };
     use std::io::{IoSlice, IoSliceMut};
 
@@ -138,9 +138,9 @@ pub fn test_timestamping_realtime() {
 #[test]
 pub fn test_timestamping_monotonic() {
     use nix::sys::socket::{
-        recvmsg, sendmsg, setsockopt, socket, sockopt::ReceiveTimestamp,
-        sockopt::TsClock, ControlMessageOwned, MsgFlags, SockFlag, SockType,
-        SockaddrIn, SocketTimestamp,
+        ControlMessageOwned, MsgFlags, SockFlag, SockType, SockaddrIn,
+        SocketTimestamp, recvmsg, sendmsg, setsockopt, socket,
+        sockopt::ReceiveTimestamp, sockopt::TsClock,
     };
     use std::io::{IoSlice, IoSliceMut};
 
@@ -227,7 +227,9 @@ pub fn test_addr_equality_path() {
 #[cfg(linux_android)]
 #[test]
 pub fn test_abstract_sun_path_too_long() {
-    let name = String::from("nix\0abstract\0tesnix\0abstract\0tesnix\0abstract\0tesnix\0abstract\0tesnix\0abstract\0testttttnix\0abstract\0test\0make\0sure\0this\0is\0long\0enough");
+    let name = String::from(
+        "nix\0abstract\0tesnix\0abstract\0tesnix\0abstract\0tesnix\0abstract\0tesnix\0abstract\0testttttnix\0abstract\0test\0make\0sure\0this\0is\0long\0enough",
+    );
     let addr = UnixAddr::new_abstract(name.as_bytes());
     addr.expect_err("assertion failed");
 }
@@ -288,7 +290,7 @@ pub fn test_unnamed_uds_addr() {
 #[test]
 pub fn test_getsockname() {
     use nix::sys::socket::bind;
-    use nix::sys::socket::{socket, AddressFamily, SockFlag, SockType};
+    use nix::sys::socket::{AddressFamily, SockFlag, SockType, socket};
 
     let tempdir = tempfile::tempdir().unwrap();
     let sockname = tempdir.path().join("sock");
@@ -309,7 +311,7 @@ pub fn test_getsockname() {
 
 #[test]
 pub fn test_socketpair() {
-    use nix::sys::socket::{socketpair, AddressFamily, SockFlag, SockType};
+    use nix::sys::socket::{AddressFamily, SockFlag, SockType, socketpair};
     use nix::unistd::{read, write};
 
     let (fd1, fd2) = socketpair(
@@ -330,7 +332,7 @@ pub fn test_socketpair() {
 #[cfg_attr(target_os = "cygwin", ignore)]
 pub fn test_recvmsg_sockaddr_un() {
     use nix::sys::socket::{
-        self, bind, socket, AddressFamily, MsgFlags, SockFlag, SockType,
+        self, AddressFamily, MsgFlags, SockFlag, SockType, bind, socket,
     };
 
     let tempdir = tempfile::tempdir().unwrap();
@@ -383,7 +385,7 @@ pub fn test_std_conversions() {
 mod recvfrom {
     use super::*;
     use nix::sys::socket::*;
-    use nix::{errno::Errno, Result};
+    use nix::{Result, errno::Errno};
     use std::thread;
 
     const MSG: &[u8] = b"Hello, World!";
@@ -622,7 +624,7 @@ mod recvfrom {
     #[cfg(any(linux_android, target_os = "freebsd", target_os = "netbsd"))]
     #[test]
     pub fn udp_recvmmsg() {
-        use nix::sys::socket::{recvmmsg, MsgFlags};
+        use nix::sys::socket::{MsgFlags, recvmmsg};
         use std::io::IoSliceMut;
 
         const NUM_MESSAGES_SENT: usize = 2;
@@ -698,7 +700,7 @@ mod recvfrom {
     #[cfg(any(linux_android, target_os = "freebsd", target_os = "netbsd"))]
     #[test]
     pub fn udp_recvmmsg_dontwait_short_read() {
-        use nix::sys::socket::{recvmmsg, MsgFlags};
+        use nix::sys::socket::{MsgFlags, recvmmsg};
         use std::io::IoSliceMut;
 
         const NUM_MESSAGES_SENT: usize = 2;
@@ -826,7 +828,7 @@ mod recvfrom {
 #[test]
 pub fn test_recvmsg_ebadf() {
     use nix::errno::Errno;
-    use nix::sys::socket::{recvmsg, MsgFlags};
+    use nix::sys::socket::{MsgFlags, recvmsg};
     use std::io::IoSliceMut;
 
     let mut buf = [0u8; 5];
@@ -845,8 +847,8 @@ pub fn test_recvmsg_ebadf() {
 #[cfg_attr(target_os = "cygwin", ignore)]
 pub fn test_scm_rights() {
     use nix::sys::socket::{
-        recvmsg, sendmsg, socketpair, AddressFamily, ControlMessage,
-        ControlMessageOwned, MsgFlags, SockFlag, SockType,
+        AddressFamily, ControlMessage, ControlMessageOwned, MsgFlags, SockFlag,
+        SockType, recvmsg, sendmsg, socketpair,
     };
     use nix::unistd::{close, pipe, read, write};
     use std::io::{IoSlice, IoSliceMut};
@@ -901,9 +903,10 @@ pub fn test_scm_rights() {
             }
         }
         assert_eq!(msg.bytes, 5);
-        assert!(!msg
-            .flags
-            .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC));
+        assert!(
+            !msg.flags
+                .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC)
+        );
     }
 
     let received_r = received_r.expect("Did not receive passed fd");
@@ -942,8 +945,8 @@ pub fn test_scm_rights() {
 pub fn test_af_alg_cipher() {
     use nix::sys::socket::sockopt::AlgSetKey;
     use nix::sys::socket::{
-        accept, bind, sendmsg, setsockopt, socket, AddressFamily, AlgAddr,
-        ControlMessage, MsgFlags, SockFlag, SockType,
+        AddressFamily, AlgAddr, ControlMessage, MsgFlags, SockFlag, SockType,
+        accept, bind, sendmsg, setsockopt, socket,
     };
     use nix::unistd::read;
     use std::io::IoSlice;
@@ -1037,11 +1040,11 @@ pub fn test_af_alg_cipher() {
 #[test]
 pub fn test_af_alg_aead() {
     use libc::{ALG_OP_DECRYPT, ALG_OP_ENCRYPT};
-    use nix::fcntl::{fcntl, FcntlArg, OFlag};
+    use nix::fcntl::{FcntlArg, OFlag, fcntl};
     use nix::sys::socket::sockopt::{AlgSetAeadAuthSize, AlgSetKey};
     use nix::sys::socket::{
-        accept, bind, sendmsg, setsockopt, socket, AddressFamily, AlgAddr,
-        ControlMessage, MsgFlags, SockFlag, SockType,
+        AddressFamily, AlgAddr, ControlMessage, MsgFlags, SockFlag, SockType,
+        accept, bind, sendmsg, setsockopt, socket,
     };
     use nix::unistd::read;
     use std::io::IoSlice;
@@ -1181,8 +1184,8 @@ pub fn test_af_alg_aead() {
 pub fn test_sendmsg_ipv4packetinfo() {
     use cfg_if::cfg_if;
     use nix::sys::socket::{
-        bind, sendmsg, socket, AddressFamily, ControlMessage, MsgFlags,
-        SockFlag, SockType, SockaddrIn,
+        AddressFamily, ControlMessage, MsgFlags, SockFlag, SockType,
+        SockaddrIn, bind, sendmsg, socket,
     };
     use std::io::IoSlice;
 
@@ -1246,8 +1249,8 @@ pub fn test_sendmsg_ipv4packetinfo() {
 pub fn test_sendmsg_ipv6packetinfo() {
     use nix::errno::Errno;
     use nix::sys::socket::{
-        bind, sendmsg, socket, AddressFamily, ControlMessage, MsgFlags,
-        SockFlag, SockType, SockaddrIn6,
+        AddressFamily, ControlMessage, MsgFlags, SockFlag, SockType,
+        SockaddrIn6, bind, sendmsg, socket,
     };
     use std::io::IoSlice;
 
@@ -1299,8 +1302,8 @@ pub fn test_sendmsg_ipv6packetinfo() {
 #[test]
 pub fn test_sendmsg_ipv4sendsrcaddr() {
     use nix::sys::socket::{
-        bind, sendmsg, socket, AddressFamily, ControlMessage, MsgFlags,
-        SockFlag, SockType, SockaddrIn,
+        AddressFamily, ControlMessage, MsgFlags, SockFlag, SockType,
+        SockaddrIn, bind, sendmsg, socket,
     };
     use std::io::IoSlice;
 
@@ -1342,7 +1345,7 @@ pub fn test_sendmsg_ipv4sendsrcaddr() {
 #[cfg_attr(target_os = "cygwin", ignore)]
 fn test_scm_rights_single_cmsg_multiple_fds() {
     use nix::sys::socket::{
-        recvmsg, sendmsg, ControlMessage, ControlMessageOwned, MsgFlags,
+        ControlMessage, ControlMessageOwned, MsgFlags, recvmsg, sendmsg,
     };
     use std::io::{IoSlice, IoSliceMut};
     use std::os::unix::io::{AsRawFd, RawFd};
@@ -1362,9 +1365,10 @@ fn test_scm_rights_single_cmsg_multiple_fds() {
             MsgFlags::empty(),
         )
         .unwrap();
-        assert!(!msg
-            .flags
-            .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC));
+        assert!(
+            !msg.flags
+                .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC)
+        );
 
         let mut cmsgs = msg.cmsgs().unwrap();
         match cmsgs.next() {
@@ -1400,8 +1404,8 @@ fn test_scm_rights_single_cmsg_multiple_fds() {
 #[test]
 pub fn test_sendmsg_empty_cmsgs() {
     use nix::sys::socket::{
-        recvmsg, sendmsg, socketpair, AddressFamily, MsgFlags, SockFlag,
-        SockType,
+        AddressFamily, MsgFlags, SockFlag, SockType, recvmsg, sendmsg,
+        socketpair,
     };
     use std::io::{IoSlice, IoSliceMut};
 
@@ -1438,9 +1442,10 @@ pub fn test_sendmsg_empty_cmsgs() {
         if msg.cmsgs().unwrap().next().is_some() {
             panic!("unexpected cmsg");
         }
-        assert!(!msg
-            .flags
-            .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC));
+        assert!(
+            !msg.flags
+                .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC)
+        );
         assert_eq!(msg.bytes, 5);
     }
 }
@@ -1449,8 +1454,8 @@ pub fn test_sendmsg_empty_cmsgs() {
 #[test]
 fn test_scm_credentials() {
     use nix::sys::socket::{
-        recvmsg, sendmsg, socketpair, AddressFamily, ControlMessage,
-        ControlMessageOwned, MsgFlags, SockFlag, SockType, UnixCredentials,
+        AddressFamily, ControlMessage, ControlMessageOwned, MsgFlags, SockFlag,
+        SockType, UnixCredentials, recvmsg, sendmsg, socketpair,
     };
     #[cfg(linux_android)]
     use nix::sys::socket::{setsockopt, sockopt::PassCred};
@@ -1518,9 +1523,10 @@ fn test_scm_credentials() {
         }
         received_cred.expect("no creds received");
         assert_eq!(msg.bytes, 5);
-        assert!(!msg
-            .flags
-            .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC));
+        assert!(
+            !msg.flags
+                .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC)
+        );
     }
 }
 
@@ -1565,8 +1571,8 @@ fn test_impl_scm_credentials_and_rights(
     use libc::ucred;
     use nix::sys::socket::sockopt::PassCred;
     use nix::sys::socket::{
-        recvmsg, sendmsg, setsockopt, socketpair, ControlMessage,
-        ControlMessageOwned, MsgFlags, SockFlag, SockType,
+        ControlMessage, ControlMessageOwned, MsgFlags, SockFlag, SockType,
+        recvmsg, sendmsg, setsockopt, socketpair,
     };
     use nix::unistd::{close, getgid, getpid, getuid, pipe, write};
     use std::io::{IoSlice, IoSliceMut};
@@ -1642,9 +1648,10 @@ fn test_impl_scm_credentials_and_rights(
         }
         received_cred.expect("no creds received");
         assert_eq!(msg.bytes, 5);
-        assert!(!msg
-            .flags
-            .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC));
+        assert!(
+            !msg.flags
+                .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC)
+        );
     }
 
     let received_r = received_r.expect("Did not receive passed fd");
@@ -1666,7 +1673,7 @@ fn test_impl_scm_credentials_and_rights(
 #[test]
 pub fn test_named_unixdomain() {
     use nix::sys::socket::{
-        accept, bind, connect, listen, socket, Backlog, UnixAddr,
+        Backlog, UnixAddr, accept, bind, connect, listen, socket,
     };
     use nix::sys::socket::{SockFlag, SockType};
     use nix::unistd::{read, write};
@@ -1729,8 +1736,8 @@ pub fn test_listen_wrongbacklog() {
 #[cfg(linux_android)]
 #[test]
 pub fn test_unnamed_unixdomain() {
-    use nix::sys::socket::{getsockname, socketpair};
     use nix::sys::socket::{SockFlag, SockType};
+    use nix::sys::socket::{getsockname, socketpair};
 
     let (fd_1, _fd_2) = socketpair(
         AddressFamily::Unix,
@@ -1749,8 +1756,8 @@ pub fn test_unnamed_unixdomain() {
 #[cfg(linux_android)]
 #[test]
 pub fn test_unnamed_unixdomain_autobind() {
-    use nix::sys::socket::{bind, getsockname, socket};
     use nix::sys::socket::{SockFlag, SockType};
+    use nix::sys::socket::{bind, getsockname, socket};
 
     let fd = socket(
         AddressFamily::Unix,
@@ -1779,7 +1786,7 @@ pub fn test_unnamed_unixdomain_autobind() {
 pub fn test_syscontrol() {
     use nix::errno::Errno;
     use nix::sys::socket::{
-        socket, SockFlag, SockProtocol, SockType, SysControlAddr,
+        SockFlag, SockProtocol, SockType, SysControlAddr, socket,
     };
 
     let fd = socket(
@@ -1846,9 +1853,9 @@ fn loopback_address(
 pub fn test_recv_ipv4pktinfo() {
     use nix::net::if_::*;
     use nix::sys::socket::sockopt::Ipv4PacketInfo;
-    use nix::sys::socket::{bind, SockFlag, SockType, SockaddrIn};
+    use nix::sys::socket::{ControlMessageOwned, MsgFlags, recvmsg, sendmsg};
+    use nix::sys::socket::{SockFlag, SockType, SockaddrIn, bind};
     use nix::sys::socket::{getsockname, setsockopt, socket};
-    use nix::sys::socket::{recvmsg, sendmsg, ControlMessageOwned, MsgFlags};
     use std::io::{IoSlice, IoSliceMut};
 
     let lo_ifaddr = loopback_address(AddressFamily::Inet);
@@ -1898,9 +1905,10 @@ pub fn test_recv_ipv4pktinfo() {
             MsgFlags::empty(),
         )
         .expect("recvmsg failed");
-        assert!(!msg
-            .flags
-            .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC));
+        assert!(
+            !msg.flags
+                .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC)
+        );
 
         let mut cmsgs = msg.cmsgs().unwrap();
         if let Some(ControlMessageOwned::Ipv4PacketInfo(pktinfo)) = cmsgs.next()
@@ -1937,9 +1945,9 @@ pub fn test_recv_ipv4pktinfo() {
 pub fn test_recvif() {
     use nix::net::if_::*;
     use nix::sys::socket::sockopt::{Ipv4RecvDstAddr, Ipv4RecvIf};
-    use nix::sys::socket::{bind, SockFlag, SockType, SockaddrIn};
+    use nix::sys::socket::{ControlMessageOwned, MsgFlags, recvmsg, sendmsg};
+    use nix::sys::socket::{SockFlag, SockType, SockaddrIn, bind};
     use nix::sys::socket::{getsockname, setsockopt, socket};
-    use nix::sys::socket::{recvmsg, sendmsg, ControlMessageOwned, MsgFlags};
     use std::io::{IoSlice, IoSliceMut};
 
     let lo_ifaddr = loopback_address(AddressFamily::Inet);
@@ -1991,9 +1999,10 @@ pub fn test_recvif() {
             MsgFlags::empty(),
         )
         .expect("recvmsg failed");
-        assert!(!msg
-            .flags
-            .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC));
+        assert!(
+            !msg.flags
+                .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC)
+        );
         assert_eq!(msg.cmsgs().unwrap().count(), 2, "expected 2 cmsgs");
 
         let mut rx_recvif = false;
@@ -2013,11 +2022,13 @@ pub fn test_recvif() {
                 ControlMessageOwned::Ipv4RecvDstAddr(addr) => {
                     rx_recvdstaddr = true;
                     if let Some(sin) = lo.as_sockaddr_in() {
-                        assert_eq!(sin.as_ref().sin_addr.s_addr,
-                                   addr.s_addr,
-                                   "unexpected destination address (expected {}, got {})",
-                                   sin.as_ref().sin_addr.s_addr,
-                                   addr.s_addr);
+                        assert_eq!(
+                            sin.as_ref().sin_addr.s_addr,
+                            addr.s_addr,
+                            "unexpected destination address (expected {}, got {})",
+                            sin.as_ref().sin_addr.s_addr,
+                            addr.s_addr
+                        );
                     } else {
                         panic!("unexpected Sockaddr");
                     }
@@ -2037,9 +2048,9 @@ pub fn test_recvif() {
 #[test]
 pub fn test_recvif_ipv4() {
     use nix::sys::socket::sockopt::Ipv4OrigDstAddr;
-    use nix::sys::socket::{bind, SockFlag, SockType, SockaddrIn};
+    use nix::sys::socket::{ControlMessageOwned, MsgFlags, recvmsg, sendmsg};
+    use nix::sys::socket::{SockFlag, SockType, SockaddrIn, bind};
     use nix::sys::socket::{getsockname, setsockopt, socket};
-    use nix::sys::socket::{recvmsg, sendmsg, ControlMessageOwned, MsgFlags};
     use std::io::{IoSlice, IoSliceMut};
 
     let lo_ifaddr = loopback_address(AddressFamily::Inet);
@@ -2089,9 +2100,10 @@ pub fn test_recvif_ipv4() {
             MsgFlags::empty(),
         )
         .expect("recvmsg failed");
-        assert!(!msg
-            .flags
-            .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC));
+        assert!(
+            !msg.flags
+                .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC)
+        );
         assert_eq!(msg.cmsgs().unwrap().count(), 1, "expected 1 cmsgs");
 
         let mut rx_recvorigdstaddr = false;
@@ -2100,11 +2112,13 @@ pub fn test_recvif_ipv4() {
                 ControlMessageOwned::Ipv4OrigDstAddr(addr) => {
                     rx_recvorigdstaddr = true;
                     if let Some(sin) = lo.as_sockaddr_in() {
-                        assert_eq!(sin.as_ref().sin_addr.s_addr,
-                                   addr.sin_addr.s_addr,
-                                   "unexpected destination address (expected {}, got {})",
-                                   sin.as_ref().sin_addr.s_addr,
-                                   addr.sin_addr.s_addr);
+                        assert_eq!(
+                            sin.as_ref().sin_addr.s_addr,
+                            addr.sin_addr.s_addr,
+                            "unexpected destination address (expected {}, got {})",
+                            sin.as_ref().sin_addr.s_addr,
+                            addr.sin_addr.s_addr
+                        );
                     } else {
                         panic!("unexpected Sockaddr");
                     }
@@ -2126,9 +2140,9 @@ pub fn test_recvif_ipv4() {
 #[test]
 pub fn test_recvif_ipv6() {
     use nix::sys::socket::sockopt::Ipv6OrigDstAddr;
-    use nix::sys::socket::{bind, SockFlag, SockType, SockaddrIn6};
+    use nix::sys::socket::{ControlMessageOwned, MsgFlags, recvmsg, sendmsg};
+    use nix::sys::socket::{SockFlag, SockType, SockaddrIn6, bind};
     use nix::sys::socket::{getsockname, setsockopt, socket};
-    use nix::sys::socket::{recvmsg, sendmsg, ControlMessageOwned, MsgFlags};
     use std::io::{IoSlice, IoSliceMut};
 
     let lo_ifaddr = loopback_address(AddressFamily::Inet6);
@@ -2178,9 +2192,10 @@ pub fn test_recvif_ipv6() {
             MsgFlags::empty(),
         )
         .expect("recvmsg failed");
-        assert!(!msg
-            .flags
-            .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC));
+        assert!(
+            !msg.flags
+                .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC)
+        );
         assert_eq!(msg.cmsgs().unwrap().count(), 1, "expected 1 cmsgs");
 
         let mut rx_recvorigdstaddr = false;
@@ -2189,11 +2204,13 @@ pub fn test_recvif_ipv6() {
                 ControlMessageOwned::Ipv6OrigDstAddr(addr) => {
                     rx_recvorigdstaddr = true;
                     if let Some(sin) = lo.as_sockaddr_in6() {
-                        assert_eq!(sin.as_ref().sin6_addr.s6_addr,
-                                   addr.sin6_addr.s6_addr,
-                                   "unexpected destination address (expected {:?}, got {:?})",
-                                   sin.as_ref().sin6_addr.s6_addr,
-                                   addr.sin6_addr.s6_addr);
+                        assert_eq!(
+                            sin.as_ref().sin6_addr.s6_addr,
+                            addr.sin6_addr.s6_addr,
+                            "unexpected destination address (expected {:?}, got {:?})",
+                            sin.as_ref().sin6_addr.s6_addr,
+                            addr.sin6_addr.s6_addr
+                        );
                     } else {
                         panic!("unexpected Sockaddr");
                     }
@@ -2226,9 +2243,9 @@ pub fn test_recvif_ipv6() {
 pub fn test_recv_ipv6pktinfo() {
     use nix::net::if_::*;
     use nix::sys::socket::sockopt::Ipv6RecvPacketInfo;
-    use nix::sys::socket::{bind, SockFlag, SockType, SockaddrIn6};
+    use nix::sys::socket::{ControlMessageOwned, MsgFlags, recvmsg, sendmsg};
+    use nix::sys::socket::{SockFlag, SockType, SockaddrIn6, bind};
     use nix::sys::socket::{getsockname, setsockopt, socket};
-    use nix::sys::socket::{recvmsg, sendmsg, ControlMessageOwned, MsgFlags};
     use std::io::{IoSlice, IoSliceMut};
 
     let lo_ifaddr = loopback_address(AddressFamily::Inet6);
@@ -2278,9 +2295,10 @@ pub fn test_recv_ipv6pktinfo() {
             MsgFlags::empty(),
         )
         .expect("recvmsg failed");
-        assert!(!msg
-            .flags
-            .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC));
+        assert!(
+            !msg.flags
+                .intersects(MsgFlags::MSG_TRUNC | MsgFlags::MSG_CTRUNC)
+        );
 
         let mut cmsgs = msg.cmsgs().unwrap();
         if let Some(ControlMessageOwned::Ipv6PacketInfo(pktinfo)) = cmsgs.next()
@@ -2507,9 +2525,9 @@ fn test_recvmmsg_timestampns() {
 #[cfg(any(linux_android, target_os = "fuchsia"))]
 #[test]
 fn test_recvmsg_rxq_ovfl() {
+    use nix::Error;
     use nix::sys::socket::sockopt::{RcvBuf, RxqOvfl};
     use nix::sys::socket::*;
-    use nix::Error;
     use std::io::{IoSlice, IoSliceMut};
 
     let message = [0u8; 2048];
@@ -2617,8 +2635,8 @@ fn test_recvmsg_rxq_ovfl() {
 pub fn test_ip_tos_udp() {
     use nix::sys::socket::ControlMessageOwned;
     use nix::sys::socket::{
-        bind, recvmsg, sendmsg, setsockopt, socket, sockopt, ControlMessage,
-        MsgFlags, SockFlag, SockType, SockaddrIn,
+        ControlMessage, MsgFlags, SockFlag, SockType, SockaddrIn, bind,
+        recvmsg, sendmsg, setsockopt, socket, sockopt,
     };
 
     let sock_addr = SockaddrIn::from_str("127.0.0.1:6909").unwrap();
@@ -2698,8 +2716,8 @@ pub fn test_ip_tos_udp() {
 pub fn test_ipv6_tclass_udp() {
     use nix::sys::socket::ControlMessageOwned;
     use nix::sys::socket::{
-        bind, recvmsg, sendmsg, setsockopt, socket, sockopt, ControlMessage,
-        MsgFlags, SockFlag, SockType, SockaddrIn6,
+        ControlMessage, MsgFlags, SockFlag, SockType, SockaddrIn6, bind,
+        recvmsg, sendmsg, setsockopt, socket, sockopt,
     };
 
     let std_sa = SocketAddrV6::from_str("[::1]:6902").unwrap();
@@ -2966,11 +2984,11 @@ mod linux_errqueue {
 #[test]
 pub fn test_txtime() {
     use nix::sys::socket::{
-        bind, recvmsg, sendmsg, setsockopt, socket, sockopt, ControlMessage,
-        MsgFlags, SockFlag, SockType, SockaddrIn,
+        ControlMessage, MsgFlags, SockFlag, SockType, SockaddrIn, bind,
+        recvmsg, sendmsg, setsockopt, socket, sockopt,
     };
     use nix::sys::time::TimeValLike;
-    use nix::time::{clock_gettime, ClockId};
+    use nix::time::{ClockId, clock_gettime};
 
     require_kernel_version!(test_txtime, ">= 5.8");
 
@@ -3027,8 +3045,8 @@ pub fn test_txtime() {
 #[test]
 fn test_icmp_protocol() {
     use nix::sys::socket::{
-        sendto, socket, AddressFamily, MsgFlags, SockFlag, SockProtocol,
-        SockType, SockaddrIn,
+        AddressFamily, MsgFlags, SockFlag, SockProtocol, SockType, SockaddrIn,
+        sendto, socket,
     };
 
     require_capability!("test_icmp_protocol", CAP_NET_RAW);
@@ -3063,9 +3081,9 @@ fn test_icmp_protocol() {
 fn test_recvmm2() -> nix::Result<()> {
     use nix::sys::{
         socket::{
-            bind, recvmmsg, sendmsg, setsockopt, socket, sockopt::Timestamping,
             AddressFamily, ControlMessageOwned, MsgFlags, MultiHeaders,
-            SockFlag, SockType, SockaddrIn, TimestampingFlag, Timestamps,
+            SockFlag, SockType, SockaddrIn, TimestampingFlag, Timestamps, bind,
+            recvmmsg, sendmsg, setsockopt, socket, sockopt::Timestamping,
         },
         time::TimeSpec,
     };
@@ -3177,7 +3195,7 @@ fn can_use_cmsg_space() {
 )))]
 #[test]
 fn can_open_routing_socket() {
-    use nix::sys::socket::{socket, AddressFamily, SockFlag, SockType};
+    use nix::sys::socket::{AddressFamily, SockFlag, SockType, socket};
 
     let _ =
         socket(AddressFamily::Route, SockType::Raw, SockFlag::empty(), None)

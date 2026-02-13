@@ -69,10 +69,10 @@ fn test_ptrace_setsiginfo() {
 #[test]
 fn test_ptrace_cont() {
     use nix::sys::ptrace;
-    use nix::sys::signal::{raise, Signal};
-    use nix::sys::wait::{waitpid, WaitPidFlag, WaitStatus};
-    use nix::unistd::fork;
+    use nix::sys::signal::{Signal, raise};
+    use nix::sys::wait::{WaitPidFlag, WaitStatus, waitpid};
     use nix::unistd::ForkResult::*;
+    use nix::unistd::fork;
 
     require_capability!("test_ptrace_cont", CAP_SYS_PTRACE);
 
@@ -133,9 +133,9 @@ fn test_ptrace_cont() {
 fn test_ptrace_interrupt() {
     use nix::sys::ptrace;
     use nix::sys::signal::Signal;
-    use nix::sys::wait::{waitpid, WaitPidFlag, WaitStatus};
-    use nix::unistd::fork;
+    use nix::sys::wait::{WaitPidFlag, WaitStatus, waitpid};
     use nix::unistd::ForkResult::*;
+    use nix::unistd::fork;
     use std::thread::sleep;
     use std::time::Duration;
 
@@ -195,12 +195,12 @@ fn test_ptrace_interrupt() {
 #[test]
 fn test_ptrace_syscall() {
     use nix::sys::ptrace;
-    use nix::sys::signal::kill;
     use nix::sys::signal::Signal;
-    use nix::sys::wait::{waitpid, WaitStatus};
+    use nix::sys::signal::kill;
+    use nix::sys::wait::{WaitStatus, waitpid};
+    use nix::unistd::ForkResult::*;
     use nix::unistd::fork;
     use nix::unistd::getpid;
-    use nix::unistd::ForkResult::*;
 
     require_capability!("test_ptrace_syscall", CAP_SYS_PTRACE);
 
@@ -314,9 +314,9 @@ fn test_ptrace_syscall() {
 fn test_ptrace_regsets() {
     use nix::sys::ptrace::{self, getregset, regset, setregset};
     use nix::sys::signal::*;
-    use nix::sys::wait::{waitpid, WaitStatus};
-    use nix::unistd::fork;
+    use nix::sys::wait::{WaitStatus, waitpid};
     use nix::unistd::ForkResult::*;
+    use nix::unistd::fork;
 
     require_capability!("test_ptrace_regsets", CAP_SYS_PTRACE);
 
@@ -386,9 +386,9 @@ fn test_ptrace_regsets() {
 #[test]
 fn test_ptrace_syscall_info() {
     use nix::sys::ptrace;
-    use nix::sys::wait::{waitpid, WaitStatus};
-    use nix::unistd::fork;
+    use nix::sys::wait::{WaitStatus, waitpid};
     use nix::unistd::ForkResult::*;
+    use nix::unistd::fork;
 
     require_capability!("test_ptrace_syscall_info", CAP_SYS_PTRACE);
 

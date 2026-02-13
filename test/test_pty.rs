@@ -1,10 +1,10 @@
 use std::fs::File;
-use std::io::{stdout, Read, Write};
+use std::io::{Read, Write, stdout};
 use std::os::unix::prelude::*;
 use std::path::Path;
 
 use libc::_exit;
-use nix::fcntl::{open, OFlag};
+use nix::fcntl::{OFlag, open};
 use nix::pty::*;
 use nix::sys::stat;
 use nix::sys::termios::*;
@@ -102,7 +102,7 @@ fn open_ptty_pair() -> (PtyMaster, File) {
     // TODO: rewrite using ioctl!
     #[allow(clippy::comparison_chain)]
     {
-        use libc::{ioctl, I_FIND, I_PUSH};
+        use libc::{I_FIND, I_PUSH, ioctl};
 
         // On illumos systems, as per pts(7D), one must push STREAMS modules
         // after opening a device path returned from ptsname().
